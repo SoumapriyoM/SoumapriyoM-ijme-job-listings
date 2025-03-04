@@ -1,1 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IJME: Job Listings - SERI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        details {
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>IJME: Job Listings</h1>
+    <p>Click on ▶ to expand the job listing and access the full ad.</p>
+
+    <div id="job-listings">
+        <p>Loading job listings...</p>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.getJSON("/.netlify/functions/fetchJobs", function(response) {
+                const jobs = response.job_openings;
+                let html = "";
+
+                jobs.forEach(job => {
+                    if (job.country_code === 'IN') {  // Only show jobs in India
+                        html += `<details>
+                            <summary><b>${job.adtitle}</b> - ${job.name}</summary>
+                            <p><b>Position:</b> ${job.position_type}</p>
+                            <p><b>Department:</b> ${job.department}</p>
+                            <p><b>Location:</b> ${job.name}, ${job.country_code}</p>
+                            <p><b>Open Date:</b> ${new Date(job.startdate).toLocaleDateString()}</p>
+                            <p><b>Close Date:</b> ${new Date(job.enddate).toLocaleDateString()}</p>
+                            <p><a href="https://econjobmarket.org/positions/${job.posid}" target="_blank">See full ad</a></p>
+                        </details>`;
+                    }
+                });
+
+                $("#job-listings").html(html || "<p>No listings found.</p>");
+            }).fail(function() {
+                $("#job-listings").html("<p>Error loading job listings.</p>");
+            });
+        });
+    </script>
+
+</body>
+</html>
 
