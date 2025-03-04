@@ -5,26 +5,28 @@ exports.handler = async function() {
 
     try {
         const response = await fetch(apiUrl);
-        const text = await response.text();
+        const rawText = await response.text();
 
-        // Strictly extract the JSON object between "parseResults(" and final ")"
-        const jsonStart = text.indexOf('(') + 1;
-        const jsonEnd = text.lastIndexOf(')');
-        if (jsonStart < 1 || jsonEnd < 0) {
-            throw new Error("Invalid JSONP response format.");
+        // Safely extract content between "parseResults(" and the final ")"
+        const jsonStart = rawText.indexOf('(') + 1;  // Find first '('
+        const jsonEnd = rawText.lastIndexOf(')');   // Find last ')'
+
+        if (jsonStart === 0 || jsonEnd === -1) {
+            throw new Error("Invalid JSONP format - could not find proper wrapping");
         }
 
-        const jsonString = text.substring(jsonStart, jsonEnd).trim();
+        const jsonText = rawText.substring(jsonStart, jsonEnd).trim();
 
-        // Parse the cleaned JSON string
-        const data = JSON.parse(jsonString);
+        // Try parsing the extracted JSON
+        const parsedData = JSON.parse(jsonText);
 
         return {
             statusCode: 200,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(parsedData)
         };
-
     } catch (error) {
         return {
             statusCode: 500,
