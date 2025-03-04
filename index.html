@@ -39,7 +39,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            $.getJSON("/.netlify/functions/fetchJobs", function(response) {
+            $.getJSON("/.netlify/functions/fetchJobs.js", function(response) {
                 const jobs = response.job_openings;
                 let html = "";
 
