@@ -7,12 +7,14 @@ exports.handler = async function() {
         const response = await fetch(apiUrl);
         const text = await response.text();
 
-        // Strip JSONP wrapper (parseResults(...)) to get clean JSON
+        // Remove JSONP wrapper: parseResults(...)
         const jsonStart = text.indexOf("(") + 1;
         const jsonEnd = text.lastIndexOf(")");
         const jsonString = text.substring(jsonStart, jsonEnd);
+
         const data = JSON.parse(jsonString);
 
+        // Respond with clean JSON
         return {
             statusCode: 200,
             headers: {
@@ -28,4 +30,3 @@ exports.handler = async function() {
         };
     }
 };
-
