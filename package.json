@@ -1,0 +1,10 @@
+{
+    "name": "ijme-job-listings",
+    "version": "1.0.0",
+    "description": "Job Listings Site for IJME using Netlify Functions",
+    "main": "index.js",
+    "dependencies": {
+        "node-fetch": "^2.6.9"
+    },
+    "license": "MIT"
+}
