@@ -7,11 +7,16 @@ exports.handler = async function() {
         const response = await fetch(apiUrl);
         const text = await response.text();
 
-        // Strip JSONP wrapper (parseResults(...))
+        // Strictly extract the JSON object between "parseResults(" and final ")"
         const jsonStart = text.indexOf('(') + 1;
         const jsonEnd = text.lastIndexOf(')');
-        const jsonString = text.substring(jsonStart, jsonEnd);
+        if (jsonStart < 1 || jsonEnd < 0) {
+            throw new Error("Invalid JSONP response format.");
+        }
 
+        const jsonString = text.substring(jsonStart, jsonEnd).trim();
+
+        // Parse the cleaned JSON string
         const data = JSON.parse(jsonString);
 
         return {
@@ -19,10 +24,14 @@ exports.handler = async function() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         };
+
     } catch (error) {
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "Failed to fetch job data", details: error.message })
+            body: JSON.stringify({
+                error: "Failed to fetch job data",
+                details: error.message
+            })
         };
     }
 };
